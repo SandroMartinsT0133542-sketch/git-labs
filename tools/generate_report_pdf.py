@@ -33,11 +33,11 @@ def build_styles():
         ParagraphStyle(
             name="CoverTitle",
             parent=styles["Title"],
-            fontName="Helvetica-Bold",
-            fontSize=22,
-            leading=26,
+            fontName="Times-Bold",
+            fontSize=21,
+            leading=25,
             alignment=TA_CENTER,
-            textColor=colors.HexColor("#143d59"),
+            textColor=colors.HexColor("#1f2d3d"),
             spaceAfter=8,
         )
     )
@@ -45,11 +45,11 @@ def build_styles():
         ParagraphStyle(
             name="CoverSubtitle",
             parent=styles["BodyText"],
-            fontName="Helvetica",
-            fontSize=10.5,
+            fontName="Times-Italic",
+            fontSize=10.2,
             leading=14,
             alignment=TA_CENTER,
-            textColor=colors.HexColor("#355c7d"),
+            textColor=colors.HexColor("#4b5563"),
             spaceAfter=6,
         )
     )
@@ -57,10 +57,10 @@ def build_styles():
         ParagraphStyle(
             name="SectionHeading",
             parent=styles["Heading1"],
-            fontName="Helvetica-Bold",
+            fontName="Times-Bold",
             fontSize=14,
             leading=18,
-            textColor=colors.HexColor("#1f5f8b"),
+            textColor=colors.HexColor("#1f2937"),
             spaceBefore=10,
             spaceAfter=6,
             keepWithNext=True,
@@ -70,10 +70,10 @@ def build_styles():
         ParagraphStyle(
             name="SubHeading",
             parent=styles["Heading2"],
-            fontName="Helvetica-Bold",
+            fontName="Times-Bold",
             fontSize=11.5,
             leading=14,
-            textColor=colors.HexColor("#2c3e50"),
+            textColor=colors.HexColor("#374151"),
             spaceBefore=7,
             spaceAfter=4,
             keepWithNext=True,
@@ -83,11 +83,11 @@ def build_styles():
         ParagraphStyle(
             name="Body",
             parent=styles["BodyText"],
-            fontName="Helvetica",
-            fontSize=9.7,
-            leading=13,
+            fontName="Times-Roman",
+            fontSize=10,
+            leading=14,
             alignment=TA_JUSTIFY,
-            textColor=colors.HexColor("#23313f"),
+            textColor=colors.HexColor("#1f2937"),
             spaceAfter=5,
         )
     )
@@ -95,12 +95,12 @@ def build_styles():
         ParagraphStyle(
             name="BulletCustom",
             parent=styles["BodyText"],
-            fontName="Helvetica",
-            fontSize=9.5,
-            leading=12.7,
+            fontName="Times-Roman",
+            fontSize=9.8,
+            leading=13.4,
             leftIndent=14,
             firstLineIndent=-8,
-            textColor=colors.HexColor("#23313f"),
+            textColor=colors.HexColor("#1f2937"),
             spaceAfter=2,
         )
     )
@@ -124,11 +124,11 @@ def build_styles():
         ParagraphStyle(
             name="Meta",
             parent=styles["BodyText"],
-            fontName="Helvetica",
-            fontSize=9.8,
+            fontName="Times-Roman",
+            fontSize=10,
             leading=12.5,
             alignment=TA_CENTER,
-            textColor=colors.HexColor("#49657a"),
+            textColor=colors.HexColor("#4b5563"),
             spaceAfter=0,
         )
     )
@@ -136,10 +136,10 @@ def build_styles():
         ParagraphStyle(
             name="Evidence",
             parent=styles["BodyText"],
-            fontName="Helvetica-Bold",
-            fontSize=9.2,
+            fontName="Times-Bold",
+            fontSize=9.6,
             leading=12,
-            textColor=colors.HexColor("#1a5276"),
+            textColor=colors.HexColor("#1f5f8b"),
             spaceAfter=4,
         )
     )
@@ -256,9 +256,9 @@ def parse_markdown(text: str, styles):
 def cover_page(story, styles):
     story.extend(
         [
-            Spacer(1, 0.7 * cm),
+            Spacer(1, 0.5 * cm),
             Paragraph("Relatório de Projeto Web", styles["CoverTitle"]),
-            Paragraph("Git & GitHub", styles["CoverSubtitle"]),
+            Paragraph("Relatório técnico-académico", styles["CoverSubtitle"]),
             Spacer(1, 0.28 * cm),
             Paragraph(
                 "Documento académico com evidências textuais e visuais de commits, branches, merge com conflito, tags e preparação de colaboração GitHub.",
@@ -267,6 +267,14 @@ def cover_page(story, styles):
             Spacer(1, 0.45 * cm),
             build_cover_table(styles),
             Spacer(1, 0.35 * cm),
+            Paragraph("Resumo", styles["SubHeading"]),
+            Paragraph(
+                "O trabalho demonstra a criação, evolução e análise de um repositório Git com foco em rigor operacional, documentação de evidências e preparação para colaboração no GitHub. A estrutura inclui comandos essenciais, análise do histórico, resolução de conflito de merge, tagging semântica e material visual de suporte.",
+                styles["Body"],
+            ),
+            Paragraph("Palavras-chave", styles["SubHeading"]),
+            Paragraph("Git, GitHub, branches, merge, conflito, tags, documentação, evidência visual", styles["Body"]),
+            Spacer(1, 0.15 * cm),
             Table(
                 [["Evidências principais", "Screenshots SVG, report.md e logs de Git"], ["Colaborador", "vicsolucoes"], ["Estado", "Relatório revisto e pronto para submissão"]],
                 colWidths=[4.2 * cm, 11.6 * cm],
