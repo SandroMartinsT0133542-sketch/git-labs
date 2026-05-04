@@ -30,7 +30,3 @@ Abrir: http://localhost:8000/index.html
 3. Conflito intencional e resolução manual
 4. Tags: v1.0.0, v1.1.0
 5. Histórico completo em git log
-
----
-
-Este repositório contém também o relatório detalhado em `reports/report.md` e o PDF de submissão em `reports/SandroMartins0133542.pdf`.

@@ -1,0 +1,7 @@
+﻿*   1cdf758 fix: Resolve merge conflict - integrate features A and B
+|\  
+| * 513bce6 feat(alunoB): Add alternative feature B implementation
+* | 5354d65 feat(alunoA): Add feature A implementation
+|/  
+* 3800359 feat: Add web skeleton (HTML, CSS, JavaScript)
+* bc7188c docs: Add README with project description and instructions

@@ -257,16 +257,6 @@ git pull . collaborator/vicsolucoes
 
 O estado final do repositório regista a integração da contribuição externa e a resolução da linha em conflito, ficando documentado no histórico e no relatório como o passo de fecho da colaboração.
 
-### Registo no Remote (evidência)
-
-As ações realizadas no repositório remoto foram registadas e capturadas em ficheiros de evidência:
-
-- [reports/08-remote-show-origin.txt](reports/08-remote-show-origin.txt) — saída de `git remote show origin` (mostra branches remotos e configuração de push/pull)
-- [reports/09-remote-branches.txt](reports/09-remote-branches.txt) — lista de branches remotas (`git branch -r`)
-- [reports/10-git-log.txt](reports/10-git-log.txt) — log curto do histórico (`git log --oneline --graph`)
-
-Nota: a presença da branch `collaborator/vicsolucoes` no remote indica que a contribuição do colaborador está disponível no origin e pode ser acedida via pull/PR.
-
 ### Evidências de colaboração
 
 ```bash
