@@ -1,0 +1,6 @@
+﻿  origin/HEAD -> origin/main
+  origin/collaborator/vicsolucoes
+  origin/feature/alunoA
+  origin/feature/alunoA-our
+  origin/feature/alunoB
+  origin/main

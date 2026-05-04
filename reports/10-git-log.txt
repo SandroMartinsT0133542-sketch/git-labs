@@ -1,0 +1,36 @@
+﻿* a8f538c (HEAD -> main, origin/main, origin/HEAD) chore: restore stashed working changes (index.html, script.js)
+* f7a15ae feat: Add web skeleton (HTML, CSS, JavaScript)
+* e80edce docs: Add README with project description and instructions
+* 1d25c3d Adiciona script python de simula├º├úo de conflito
+* 515414c Adiciona novo ficheiro de documenta├º├úo ao laborat├│rio
+* b124b3e changes readme
+* bd1122f add: README file
+* 85f8dfa Initial commit
+*   d96f551 (refs/stash) On feature/alunoA-our: wip before switching to main to pop stash
+|\  
+| * 7ec9701 index on feature/alunoA-our: 621570d docs: Finalize collaborator conflict narrative
+|/  
+* 621570d (origin/feature/alunoA-our, feature/alunoA-our) docs: Finalize collaborator conflict narrative
+* a8ca254 docs: Document collaborator pull workflow in report
+* 149987d fix: Restore HTML after collaborator pull merge
+*   81b9c61 Merge branch 'collaborator/vicsolucoes' into feature/alunoA-our
+|\  
+| * e1b0125 (origin/feature/alunoA, origin/collaborator/vicsolucoes, feature/alunoA, collaborator/vicsolucoes) feat(vicsolucoes): Update project line for collaboration
+* | 12f6821 feat(alunoA): Adjust resolution line for collaborator pull
+|/  
+* 67bf58f docs: Embed rendered screenshots in PDF
+* 2c7ce05 docs: Replace text evidence with screenshots in PDF
+* e6cdfbd docs: Make PDF report more academic
+* de6a3a3 docs: Improve PDF report layout and styling
+* de438a4 docs: Revise report evidence and collaboration details
+* ea8f39d feat: Generate SVG screenshots from git evidence files
+* c6e9370 docs: Update PDF with professional formatting (reportlab)
+* 23cfc31 docs: Add PDF report - SandroMartins0133542.pdf
+* ca6ce13 docs: Add comprehensive report with all Git demonstrations
+* 7f26949 docs: Add evidence files (status, logs, tags)
+*   1cdf758 (tag: v1.1.0, tag: v1.0.0) fix: Resolve merge conflict - integrate features A and B
+|\  
+| * 513bce6 (origin/feature/alunoB, feature/alunoB) feat(alunoB): Add alternative feature B implementation
+* | 5354d65 feat(alunoA): Add feature A implementation
+|/  
+* 3800359 feat: Add web skeleton (HTML, CSS, JavaScript)

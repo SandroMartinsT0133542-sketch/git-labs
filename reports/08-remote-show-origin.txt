@@ -1,0 +1,22 @@
+﻿* remote origin
+  Fetch URL: https://github.com/SandroMartinsT0133542-sketch/git-labs
+  Push  URL: https://github.com/SandroMartinsT0133542-sketch/git-labs
+  HEAD branch: main
+  Remote branches:
+    collaborator/vicsolucoes tracked
+    feature/alunoA           tracked
+    feature/alunoA-our       tracked
+    feature/alunoB           tracked
+    main                     tracked
+  Local branches configured for 'git pull':
+    collaborator/vicsolucoes merges with remote collaborator/vicsolucoes
+    feature/alunoA           merges with remote feature/alunoA
+    feature/alunoA-our       merges with remote feature/alunoA-our
+    feature/alunoB           merges with remote feature/alunoB
+    main                     merges with remote main
+  Local refs configured for 'git push':
+    collaborator/vicsolucoes pushes to collaborator/vicsolucoes (up to date)
+    feature/alunoA           pushes to feature/alunoA           (up to date)
+    feature/alunoA-our       pushes to feature/alunoA-our       (up to date)
+    feature/alunoB           pushes to feature/alunoB           (up to date)
+    main                     pushes to main                     (up to date)
