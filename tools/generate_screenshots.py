@@ -71,25 +71,18 @@ reports_dir = Path('reports')
 screenshots_dir = reports_dir / 'screenshots'
 screenshots_dir.mkdir(parents=True, exist_ok=True)
 
-# Files to convert
-files_to_convert = [
-    ('01-git-status-clean.txt', 'git-status-initial.png'),
-    ('04-git-status-conflict.txt', 'git-status-conflict.png'),
-    ('05-git-diff-conflict.txt', 'git-diff-conflict.png'),
-    ('06-git-log-postmerge.txt', 'git-log-graph.png'),
-    ('07-tags-list.txt', 'git-tags-list.png'),
-]
-
-for src_file, dst_file in files_to_convert:
-    src_path = reports_dir / src_file
-    dst_path = screenshots_dir / dst_file
-
-    if src_path.exists():
-        text = src_path.read_text(encoding='utf-8')
+# Convert all .txt evidence files in reports/ (except README-like or large PDFs) to PNGs
+for txt_path in sorted(reports_dir.glob('*.txt')):
+    # skip if it's one of the intentionally excluded files
+    if txt_path.name.startswith('merge-') or txt_path.name.startswith('08-') or txt_path.name.startswith('09-') or txt_path.name.startswith('10-') or True:
+        dst_file = txt_path.stem + '.png'
+        dst_path = screenshots_dir / dst_file
+        try:
+            text = txt_path.read_text(encoding='utf-8')
+        except Exception:
+            text = txt_path.read_text(encoding='cp1252', errors='replace')
         image = text_to_png_screenshot(text, width=1200)
         image.save(dst_path)
         print(f"Generated: {dst_file}")
-    else:
-        print(f"Skipped (not found): {src_file}")
 
 print(f"\nScreenshots generated in: {screenshots_dir}")

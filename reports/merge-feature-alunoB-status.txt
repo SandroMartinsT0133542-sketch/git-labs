@@ -1,0 +1,11 @@
+﻿?? reports/merge-collaborator-vicsolucoes-log.txt
+?? reports/merge-collaborator-vicsolucoes-status.txt
+?? reports/merge-collaborator-vicsolucoes.txt
+?? reports/merge-feature-alunoA-our-commit.txt
+?? reports/merge-feature-alunoA-our-log.txt
+?? reports/merge-feature-alunoA-our-postmerge-log.txt
+?? reports/merge-feature-alunoA-our-status.txt
+?? reports/merge-feature-alunoA-our.txt
+?? reports/merge-feature-alunoB-status.txt
+?? reports/merge-feature-alunoB.txt
+?? reports/resolve-status.txt

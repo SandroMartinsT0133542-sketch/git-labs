@@ -1,0 +1,13 @@
+﻿Auto-merging README.md
+CONFLICT (add/add): Merge conflict in README.md
+Auto-merging index.html
+CONFLICT (add/add): Merge conflict in index.html
+Auto-merging reports/SandroMartins0133542.pdf
+CONFLICT (add/add): Merge conflict in reports/SandroMartins0133542.pdf
+Auto-merging reports/report.md
+CONFLICT (add/add): Merge conflict in reports/report.md
+Auto-merging script.js
+CONFLICT (add/add): Merge conflict in script.js
+Auto-merging tools/generate_report_pdf.py
+CONFLICT (add/add): Merge conflict in tools/generate_report_pdf.py
+Automatic merge failed; fix conflicts and then commit the result.

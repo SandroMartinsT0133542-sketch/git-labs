@@ -1,0 +1,9 @@
+﻿* 64cc6d4 (HEAD -> main) docs: Record remote evidence and regenerate PDF
+* a8f538c (origin/main, origin/HEAD) chore: restore stashed working changes (index.html, script.js)
+* f7a15ae feat: Add web skeleton (HTML, CSS, JavaScript)
+* e80edce docs: Add README with project description and instructions
+* 1d25c3d Adiciona script python de simula├º├úo de conflito
+* 515414c Adiciona novo ficheiro de documenta├º├úo ao laborat├│rio
+* b124b3e changes readme
+* bd1122f add: README file
+* 85f8dfa Initial commit

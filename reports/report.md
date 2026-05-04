@@ -265,7 +265,41 @@ git branch --all
 git tag --list
 ```
 
-## 7. Estrutura do Projeto Final
+## 7. Registo de Execução Final (Merge de Tudo)
+
+Para fechar o trabalho, foi executado o merge das branches relevantes em `main`, com registo completo dos comandos e respetivos resultados.
+
+### Logs textuais das ações executadas
+
+- [reports/merge-feature-alunoA-our.txt](reports/merge-feature-alunoA-our.txt)
+- [reports/merge-feature-alunoA-our-status.txt](reports/merge-feature-alunoA-our-status.txt)
+- [reports/merge-feature-alunoA-our-log.txt](reports/merge-feature-alunoA-our-log.txt)
+- [reports/merge-feature-alunoA-our-commit.txt](reports/merge-feature-alunoA-our-commit.txt)
+- [reports/merge-feature-alunoA-our-postmerge-log.txt](reports/merge-feature-alunoA-our-postmerge-log.txt)
+- [reports/resolve-status.txt](reports/resolve-status.txt)
+- [reports/merge-collaborator-vicsolucoes.txt](reports/merge-collaborator-vicsolucoes.txt)
+- [reports/merge-collaborator-vicsolucoes-status.txt](reports/merge-collaborator-vicsolucoes-status.txt)
+- [reports/merge-collaborator-vicsolucoes-log.txt](reports/merge-collaborator-vicsolucoes-log.txt)
+- [reports/merge-feature-alunoB.txt](reports/merge-feature-alunoB.txt)
+- [reports/merge-feature-alunoB-status.txt](reports/merge-feature-alunoB-status.txt)
+- [reports/merge-feature-alunoB-log.txt](reports/merge-feature-alunoB-log.txt)
+
+### Screenshots das ações executadas
+
+- [reports/screenshots/merge-feature-alunoA-our.png](reports/screenshots/merge-feature-alunoA-our.png)
+- [reports/screenshots/merge-feature-alunoA-our-status.png](reports/screenshots/merge-feature-alunoA-our-status.png)
+- [reports/screenshots/merge-feature-alunoA-our-log.png](reports/screenshots/merge-feature-alunoA-our-log.png)
+- [reports/screenshots/merge-feature-alunoA-our-commit.png](reports/screenshots/merge-feature-alunoA-our-commit.png)
+- [reports/screenshots/merge-feature-alunoA-our-postmerge-log.png](reports/screenshots/merge-feature-alunoA-our-postmerge-log.png)
+- [reports/screenshots/resolve-status.png](reports/screenshots/resolve-status.png)
+- [reports/screenshots/merge-collaborator-vicsolucoes.png](reports/screenshots/merge-collaborator-vicsolucoes.png)
+- [reports/screenshots/merge-collaborator-vicsolucoes-status.png](reports/screenshots/merge-collaborator-vicsolucoes-status.png)
+- [reports/screenshots/merge-collaborator-vicsolucoes-log.png](reports/screenshots/merge-collaborator-vicsolucoes-log.png)
+- [reports/screenshots/merge-feature-alunoB.png](reports/screenshots/merge-feature-alunoB.png)
+- [reports/screenshots/merge-feature-alunoB-status.png](reports/screenshots/merge-feature-alunoB-status.png)
+- [reports/screenshots/merge-feature-alunoB-log.png](reports/screenshots/merge-feature-alunoB-log.png)
+
+## 8. Estrutura do Projeto Final
 
 ```
 git-labs/
@@ -290,7 +324,7 @@ git-labs/
         └── git-tags-list.svg
 ```
 
-## 8. Como Executar Localmente
+## 9. Como Executar Localmente
 
 ```powershell
 python -m http.server 8000
@@ -298,7 +332,7 @@ python -m http.server 8000
 
 Abrir: `http://localhost:8000/index.html`
 
-## 9. Conclusões
+## 10. Conclusões
 
 Este projeto demonstra corretamente:
 
