@@ -11,6 +11,7 @@ from reportlab.lib.units import cm
 from reportlab.platypus import (
     BaseDocTemplate,
     Frame,
+    Image,
     KeepTogether,
     PageBreak,
     PageTemplate,
@@ -20,9 +21,6 @@ from reportlab.platypus import (
     Table,
     TableStyle,
 )
-from svglib.svglib import svg2rlg
-
-
 ROOT = Path(__file__).resolve().parents[1]
 REPORT_MD = ROOT / "reports" / "report.md"
 OUTPUT_PDF = ROOT / "reports" / "SandroMartins0133542.pdf"
@@ -30,11 +28,11 @@ SCREENSHOTS_DIR = ROOT / "reports" / "screenshots"
 
 
 SCREENSHOT_ITEMS = [
-    ("git-status-initial.svg", "Figura 1. Estado inicial do repositório"),
-    ("git-status-conflict.svg", "Figura 2. Estado do repositório durante o conflito"),
-    ("git-diff-conflict.svg", "Figura 3. Diff do conflito com marcadores"),
-    ("git-log-graph.svg", "Figura 4. Histórico pós-merge em gráfico"),
-    ("git-tags-list.svg", "Figura 5. Lista de tags criadas"),
+    ("git-status-initial.png", "Figura 1. Estado inicial do repositório"),
+    ("git-status-conflict.png", "Figura 2. Estado do repositório durante o conflito"),
+    ("git-diff-conflict.png", "Figura 3. Diff do conflito com marcadores"),
+    ("git-log-graph.png", "Figura 4. Histórico pós-merge em gráfico"),
+    ("git-tags-list.png", "Figura 5. Lista de tags criadas"),
 ]
 
 
@@ -168,23 +166,22 @@ def sanitize_text(value: str) -> str:
     )
 
 
-def svg_block(svg_name: str, caption: str, max_width: float = 16.0 * cm):
-    svg_path = SCREENSHOTS_DIR / svg_name
-    drawing = svg2rlg(str(svg_path))
-    if drawing is None:
-        return Paragraph(f"{caption} (ficheiro SVG indisponível)", getSampleStyleSheet()["BodyText"])
+def image_block(image_name: str, caption: str, max_width: float = 16.0 * cm):
+    image_path = SCREENSHOTS_DIR / image_name
+    if not image_path.exists():
+        return Paragraph(f"{caption} (ficheiro PNG indisponível)", getSampleStyleSheet()["BodyText"])
 
-    if drawing.width > max_width:
-        scale = max_width / drawing.width
-        drawing.scale(scale, scale)
-        drawing.width *= scale
-        drawing.height *= scale
+    image = Image(str(image_path))
+    if image.drawWidth > max_width:
+        scale = max_width / image.drawWidth
+        image.drawWidth *= scale
+        image.drawHeight *= scale
 
     return KeepTogether(
         [
             Paragraph(caption, getSampleStyleSheet()["Italic"]),
             Spacer(1, 0.12 * cm),
-            drawing,
+            image,
             Spacer(1, 0.18 * cm),
         ]
     )
@@ -236,7 +233,7 @@ def parse_markdown(text: str, styles):
             code_buffer = []
 
     def add_screenshot(svg_name: str, caption: str) -> None:
-        story.append(svg_block(svg_name, caption))
+        story.append(image_block(svg_name, caption))
 
     for line in text.splitlines()[4:]:
         stripped = line.rstrip()
@@ -277,16 +274,16 @@ def parse_markdown(text: str, styles):
             continue
 
         if "reports/screenshots/" in compact and compact.endswith(")"):
-            if "git-status-initial.svg" in compact:
-                add_screenshot("git-status-initial.svg", "Figura 1. Estado inicial do repositório")
-            elif "git-status-conflict.svg" in compact:
-                add_screenshot("git-status-conflict.svg", "Figura 2. Estado do repositório durante o conflito")
-            elif "git-diff-conflict.svg" in compact:
-                add_screenshot("git-diff-conflict.svg", "Figura 3. Diff do conflito com marcadores")
-            elif "git-log-graph.svg" in compact:
-                add_screenshot("git-log-graph.svg", "Figura 4. Histórico pós-merge em gráfico")
-            elif "git-tags-list.svg" in compact:
-                add_screenshot("git-tags-list.svg", "Figura 5. Lista de tags criadas")
+            if "git-status-initial" in compact:
+                add_screenshot("git-status-initial.png", "Figura 1. Estado inicial do repositório")
+            elif "git-status-conflict" in compact:
+                add_screenshot("git-status-conflict.png", "Figura 2. Estado do repositório durante o conflito")
+            elif "git-diff-conflict" in compact:
+                add_screenshot("git-diff-conflict.png", "Figura 3. Diff do conflito com marcadores")
+            elif "git-log-graph" in compact:
+                add_screenshot("git-log-graph.png", "Figura 4. Histórico pós-merge em gráfico")
+            elif "git-tags-list" in compact:
+                add_screenshot("git-tags-list.png", "Figura 5. Lista de tags criadas")
             continue
 
         if compact.startswith("**Registo"):
@@ -366,10 +363,10 @@ def cover_page(story, styles):
 
 def screenshots_page(story, styles):
     story.append(Paragraph("Registos Visuais", styles["SectionHeading"]))
-    story.append(Paragraph("As figuras seguintes sintetizam os momentos-chave do trabalho e substituem os blocos textuais de registo." , styles["Body"]))
+    story.append(Paragraph("As figuras seguintes sintetizam os momentos-chave do trabalho e substituem os blocos textuais de registo.", styles["Body"]))
     story.append(Spacer(1, 0.2 * cm))
     for svg_name, caption in SCREENSHOT_ITEMS:
-        story.append(svg_block(svg_name, caption))
+        story.append(image_block(svg_name, caption))
 
 
 

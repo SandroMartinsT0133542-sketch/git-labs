@@ -1,40 +1,70 @@
-import html
 from pathlib import Path
 
-def text_to_svg_screenshot(text_content: str, width: int = 1000, line_height: int = 20) -> str:
-    """Convert text to an SVG that looks like a terminal screenshot."""
-    lines = text_content.split('\n')
-    # Remove empty lines at the end
+from PIL import Image, ImageDraw, ImageFont
+
+
+def _load_mono_font(size: int = 18):
+    font_paths = [
+        r"C:\Windows\Fonts\consola.ttf",
+        r"C:\Windows\Fonts\cour.ttf",
+        r"C:\Windows\Fonts\lucon.ttf",
+    ]
+    for font_path in font_paths:
+        try:
+            return ImageFont.truetype(font_path, size=size)
+        except OSError:
+            continue
+    return ImageFont.load_default()
+
+
+def _wrap_lines(draw: ImageDraw.ImageDraw, lines: list[str], font, max_width: int) -> list[str]:
+    wrapped: list[str] = []
+    for line in lines:
+        if not line:
+            wrapped.append("")
+            continue
+        current = ""
+        for token in line.split(" "):
+            candidate = token if not current else f"{current} {token}"
+            if draw.textlength(candidate, font=font) <= max_width:
+                current = candidate
+            else:
+                if current:
+                    wrapped.append(current)
+                current = token
+        wrapped.append(current)
+    return wrapped
+
+
+def text_to_png_screenshot(text_content: str, width: int = 1200) -> Image.Image:
+    """Convert text to a PNG that looks like a terminal screenshot."""
+    lines = text_content.split("\n")
     while lines and not lines[-1].strip():
         lines.pop()
-    
-    height = max(150, line_height * (len(lines) + 3))
-    
-    # Escape HTML
-    escaped_lines = [html.escape(line) for line in lines]
-    escaped_text = '\n'.join(escaped_lines)
-    
-    svg = f"""<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}">
-  <!-- Background -->
-  <rect width="100%" height="100%" fill="#1e1e1e"/>
-  
-  <!-- Header -->
-  <rect width="100%" height="30" fill="#0d47a1"/>
-  <text x="10" y="20" font-family="Segoe UI, Arial" font-size="12" fill="white" font-weight="bold">Terminal Output</text>
-  
-  <!-- Content area -->
-  <rect x="0" y="30" width="100%" height="{height - 30}" fill="#1e1e1e" stroke="#444" stroke-width="1"/>
-  
-  <!-- Text content -->
-  <foreignObject x="15" y="40" width="{width - 30}" height="{height - 50}">
-    <body xmlns="http://www.w3.org/1999/xhtml" style="margin:0; padding:0;">
-      <pre style="font-family: 'Courier New', monospace; font-size: 12px; color: #00ff00; line-height: 1.5; margin: 0; padding: 0; word-wrap: break-word; white-space: pre-wrap;">{escaped_text}</pre>
-    </body>
-  </foreignObject>
-</svg>
-"""
-    return svg
+
+    font = _load_mono_font(18)
+    header_font = _load_mono_font(16)
+    dummy = Image.new("RGB", (width, 100), "#1e1e1e")
+    draw = ImageDraw.Draw(dummy)
+    wrapped_lines = _wrap_lines(draw, lines, font, width - 60)
+
+    line_height = int(font.getbbox("Ag")[3] * 1.6)
+    header_height = 44
+    padding = 24
+    height = max(160, header_height + padding * 2 + line_height * len(wrapped_lines))
+
+    image = Image.new("RGB", (width, height), "#1e1e1e")
+    draw = ImageDraw.Draw(image)
+    draw.rectangle((0, 0, width, header_height), fill="#0d47a1")
+    draw.text((16, 12), "Terminal Output", font=header_font, fill="white")
+    draw.rectangle((0, header_height, width - 1, height - 1), outline="#444444", width=1)
+
+    y = header_height + 18
+    for line in wrapped_lines:
+        draw.text((18, y), line, font=font, fill="#00ff66")
+        y += line_height
+
+    return image
 
 # Get the reports directory
 reports_dir = Path('reports')
@@ -43,21 +73,21 @@ screenshots_dir.mkdir(parents=True, exist_ok=True)
 
 # Files to convert
 files_to_convert = [
-    ('01-git-status-clean.txt', 'git-status-initial.svg'),
-    ('04-git-status-conflict.txt', 'git-status-conflict.svg'),
-    ('05-git-diff-conflict.txt', 'git-diff-conflict.svg'),
-    ('06-git-log-postmerge.txt', 'git-log-graph.svg'),
-    ('07-tags-list.txt', 'git-tags-list.svg'),
+    ('01-git-status-clean.txt', 'git-status-initial.png'),
+    ('04-git-status-conflict.txt', 'git-status-conflict.png'),
+    ('05-git-diff-conflict.txt', 'git-diff-conflict.png'),
+    ('06-git-log-postmerge.txt', 'git-log-graph.png'),
+    ('07-tags-list.txt', 'git-tags-list.png'),
 ]
 
 for src_file, dst_file in files_to_convert:
     src_path = reports_dir / src_file
     dst_path = screenshots_dir / dst_file
-    
+
     if src_path.exists():
         text = src_path.read_text(encoding='utf-8')
-        svg = text_to_svg_screenshot(text, width=1100)
-        dst_path.write_text(svg, encoding='utf-8')
+        image = text_to_png_screenshot(text, width=1200)
+        image.save(dst_path)
         print(f"Generated: {dst_file}")
     else:
         print(f"Skipped (not found): {src_file}")
