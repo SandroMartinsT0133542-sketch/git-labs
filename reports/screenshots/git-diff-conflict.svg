@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="380">
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="#1e1e1e"/>
+  
+  <!-- Header -->
+  <rect width="100%" height="30" fill="#0d47a1"/>
+  <text x="10" y="20" font-family="Segoe UI, Arial" font-size="12" fill="white" font-weight="bold">Terminal Output</text>
+  
+  <!-- Content area -->
+  <rect x="0" y="30" width="100%" height="350" fill="#1e1e1e" stroke="#444" stroke-width="1"/>
+  
+  <!-- Text content -->
+  <foreignObject x="15" y="40" width="1070" height="330">
+    <body xmlns="http://www.w3.org/1999/xhtml" style="margin:0; padding:0;">
+      <pre style="font-family: 'Courier New', monospace; font-size: 12px; color: #00ff00; line-height: 1.5; margin: 0; padding: 0; word-wrap: break-word; white-space: pre-wrap;">﻿diff --cc index.html
+index 075ba00,92cd83c..0000000
+--- a/index.html
++++ b/index.html
+@@@ -14,7 -14,7 +14,11 @@@
+    &lt;/header&gt;
+    &lt;main&gt;
+      &lt;p id=&quot;status&quot;&gt;Estado: Vers├úo inicial do projeto.&lt;/p&gt;
+++&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+ +    &lt;p&gt;&lt;strong&gt;Branch A:&lt;/strong&gt; Implementa├º├úo de funcionalidade espec├¡fica para Aluno A&lt;/p&gt;
+++=======
++     &lt;p&gt;&lt;strong&gt;Branch B:&lt;/strong&gt; Implementa├º├úo alternativa de funcionalidade para Aluno B&lt;/p&gt;
+++&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/alunoB
+    &lt;/main&gt;
+    &lt;footer&gt;
+      &lt;p&gt;&amp;copy; 2026 - Projeto Git &amp; GitHub&lt;/p&gt;</pre>
+    </body>
+  </foreignObject>
+</svg>
