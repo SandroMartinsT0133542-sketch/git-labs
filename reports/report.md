@@ -141,7 +141,7 @@ git status
 git diff
 ```
 
-**Resultado:** Pull realizado e o HTML foi corrigido manualmente para integrar a revisão do colaborador sem perder a nossa resolução.
+**Resultado:** Pull realizado a partir da branch do colaborador e o HTML foi corrigido manualmente para integrar a revisão sem perder a resolução final do projeto.
 
 **Evidência do conflito:**
 
@@ -156,15 +156,15 @@ git diff
 ```html
 <<<<<<< HEAD
 <p>
-  <strong>Branch A:</strong> Implementação de funcionalidade específica para
-  Aluno A
+  <strong>Resolução:</strong> Funcionalidades de Aluno A e Aluno B integradas
+  com sucesso
 </p>
 =======
 <p>
-  <strong>Branch B:</strong> Implementação alternativa de funcionalidade para
-  Aluno B
+  <strong>Colaborador:</strong> vicsolucoes propõe ajuste na mesma linha do
+  projeto
 </p>
->>>>>>> feature/alunoB
+>>>>>>> collaborator/vicsolucoes
 ```
 
 ### Resolução Manual
@@ -177,6 +177,14 @@ Resolvido combinando as duas funcionalidades:
   com sucesso, com revisão de vicsolucoes.
 </p>
 ```
+
+### Registo Final do Conflito
+
+O registo final fica fechado com:
+
+- Pull da branch `collaborator/vicsolucoes` para `feature/alunoA-our`
+- Correção manual do `index.html` para preservar a nossa resolução
+- Commit de resolução no histórico final do projeto
 
 **Commit de resolução:**
 
@@ -244,6 +252,10 @@ git pull . collaborator/vicsolucoes
 ```
 
 **Resultado:** O pull trouxe a alteração do colaborador e o HTML foi corrigido manualmente para manter a nossa resolução final.
+
+### Fecho da Integração
+
+O estado final do repositório regista a integração da contribuição externa e a resolução da linha em conflito, ficando documentado no histórico e no relatório como o passo de fecho da colaboração.
 
 ### Evidências de colaboração
 
