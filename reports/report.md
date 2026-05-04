@@ -122,26 +122,26 @@ git show --summary --stat HEAD
 
 ### Criação de Branches
 
-1. `feature/alunoA` — Branch com implementação A
-2. `feature/alunoB` — Branch com implementação B alternativa
+1. `feature/alunoA-our` — Branch com a nossa versão final do HTML
+2. `collaborator/vicsolucoes` — Branch com a alteração trazida no pull
 
 ```bash
 git branch
 git branch --all
-git checkout feature/alunoA
-git checkout feature/alunoB
+git checkout feature/alunoA-our
+git checkout collaborator/vicsolucoes
 ```
 
 ### Merge com Conflito Intencional
 
 ```bash
-git checkout feature/alunoA
-git merge feature/alunoB --no-ff
+git checkout feature/alunoA-our
+git pull . collaborator/vicsolucoes
 git status
 git diff
 ```
 
-**Resultado:** Conflito detectado na mesma linha do ficheiro `index.html`
+**Resultado:** Pull realizado e o HTML foi corrigido manualmente para integrar a revisão do colaborador sem perder a nossa resolução.
 
 **Evidência do conflito:**
 
@@ -174,7 +174,7 @@ Resolvido combinando as duas funcionalidades:
 ```html
 <p>
   <strong>Resolução:</strong> Funcionalidades de Aluno A e Aluno B integradas
-  com sucesso!
+  com sucesso, com revisão de vicsolucoes.
 </p>
 ```
 
@@ -182,7 +182,7 @@ Resolvido combinando as duas funcionalidades:
 
 ```bash
 git add index.html
-git commit -m "fix: Resolve merge conflict - integrate features A and B"
+git commit -m "fix: Restore HTML after collaborator pull merge"
 git log --oneline --graph --decorate -n 5
 ```
 
@@ -235,6 +235,15 @@ git push origin --tags
 No GitHub, adicionar o colaborador:
 
 - `vicsolucoes` — perfil a convidar como collaborator do repositório
+
+### Pull do Colaborador
+
+```bash
+git checkout feature/alunoA-our
+git pull . collaborator/vicsolucoes
+```
+
+**Resultado:** O pull trouxe a alteração do colaborador e o HTML foi corrigido manualmente para manter a nossa resolução final.
 
 ### Evidências de colaboração
 
