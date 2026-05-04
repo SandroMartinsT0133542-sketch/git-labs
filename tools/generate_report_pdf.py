@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import re
+from xml.sax.saxutils import escape
 
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
@@ -34,6 +35,9 @@ SCREENSHOT_ITEMS = [
     ("git-log-graph.png", "Figura 4. Histórico pós-merge em gráfico"),
     ("git-tags-list.png", "Figura 5. Lista de tags criadas"),
 ]
+
+
+LINK_RE = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
 
 
 def build_styles():
@@ -166,6 +170,34 @@ def sanitize_text(value: str) -> str:
     )
 
 
+def format_inline(text: str) -> str:
+    sanitized = sanitize_text(text)
+    # Strip markdown inline-code markers to avoid ReportLab parser conflicts.
+    sanitized = sanitized.replace("`", "")
+    return escape(sanitized)
+
+
+def pretty_caption_from_filename(filename: str) -> str:
+    stem = Path(filename).stem
+    readable = stem.replace("-", " ").replace("_", " ").strip()
+    if not readable:
+        return "Registo visual"
+    return readable[:1].upper() + readable[1:]
+
+
+def screenshot_name_from_link(link_path: str) -> str | None:
+    normalized = link_path.replace("\\", "/")
+    if "reports/screenshots/" not in normalized:
+        return None
+    file_name = Path(normalized).name
+    suffix = Path(file_name).suffix.lower()
+    if suffix == ".svg":
+        return f"{Path(file_name).stem}.png"
+    if suffix == ".png":
+        return file_name
+    return None
+
+
 def image_block(image_name: str, caption: str, max_width: float = 16.0 * cm):
     image_path = SCREENSHOTS_DIR / image_name
     if not image_path.exists():
@@ -232,8 +264,8 @@ def parse_markdown(text: str, styles):
             story.append(Preformatted("\n".join(code_buffer), styles["CodeCustom"]))
             code_buffer = []
 
-    def add_screenshot(svg_name: str, caption: str) -> None:
-        story.append(image_block(svg_name, caption))
+    def add_screenshot(image_name: str, caption: str) -> None:
+        story.append(image_block(image_name, caption))
 
     for line in text.splitlines()[4:]:
         stripped = line.rstrip()
@@ -258,55 +290,53 @@ def parse_markdown(text: str, styles):
             continue
 
         if compact.startswith("## "):
-            story.append(Paragraph(compact[3:], styles["SectionHeading"]))
+            story.append(Paragraph(format_inline(compact[3:]), styles["SectionHeading"]))
             continue
 
         if compact.startswith("### "):
-            story.append(Paragraph(compact[4:], styles["SubHeading"]))
+            story.append(Paragraph(format_inline(compact[4:]), styles["SubHeading"]))
             continue
 
         if compact.startswith("#### "):
-            story.append(Paragraph(compact[5:], styles["SubHeading"]))
+            story.append(Paragraph(format_inline(compact[5:]), styles["SubHeading"]))
             continue
 
         if compact.startswith("**") and compact.endswith("**"):
-            story.append(Paragraph(compact.replace("**", "<b>", 1).replace("**", "</b>", 1), styles["Body"]))
+            bold_text = compact[2:-2]
+            story.append(Paragraph(f"<b>{format_inline(bold_text)}</b>", styles["Body"]))
             continue
 
-        if "reports/screenshots/" in compact and compact.endswith(")"):
-            if "git-status-initial" in compact:
-                add_screenshot("git-status-initial.png", "Figura 1. Estado inicial do repositório")
-            elif "git-status-conflict" in compact:
-                add_screenshot("git-status-conflict.png", "Figura 2. Estado do repositório durante o conflito")
-            elif "git-diff-conflict" in compact:
-                add_screenshot("git-diff-conflict.png", "Figura 3. Diff do conflito com marcadores")
-            elif "git-log-graph" in compact:
-                add_screenshot("git-log-graph.png", "Figura 4. Histórico pós-merge em gráfico")
-            elif "git-tags-list" in compact:
-                add_screenshot("git-tags-list.png", "Figura 5. Lista de tags criadas")
+        link_match = LINK_RE.search(compact)
+        if link_match:
+            link_text = link_match.group(1).strip()
+            link_path = link_match.group(2).strip()
+
+            screenshot_name = screenshot_name_from_link(link_path)
+            if screenshot_name:
+                caption_text = link_text if "screenshots/" not in link_text else pretty_caption_from_filename(screenshot_name)
+                add_screenshot(screenshot_name, f"Figura. {format_inline(caption_text)}")
+                continue
+
+            link_label = format_inline(link_text)
+            link_target = format_inline(link_path)
+            story.append(Paragraph(f"{link_label}: <font color='#1f5f8b'>{link_target}</font>", styles["Body"]))
             continue
 
         if compact.startswith("**Registo"):
-            story.append(Paragraph(compact.replace("**", "", 2), styles["Evidence"]))
+            story.append(Paragraph(format_inline(compact.replace("**", "", 2)), styles["Evidence"]))
             continue
 
         bullet_match = bullet_re.match(compact)
         if bullet_match:
-            story.append(Paragraph(f"• {bullet_match.group(1)}", styles["BulletCustom"]))
+            story.append(Paragraph(f"• {format_inline(bullet_match.group(1))}", styles["BulletCustom"]))
             continue
 
         ordered_match = ordered_re.match(compact)
         if ordered_match:
-            story.append(Paragraph(compact, styles["BulletCustom"]))
+            story.append(Paragraph(format_inline(compact), styles["BulletCustom"]))
             continue
 
-        if compact.startswith("[") and "](" in compact:
-            if "screenshots" in compact:
-                continue
-            story.append(Paragraph(compact, styles["Body"]))
-            continue
-
-        story.append(Paragraph(compact, styles["Body"]))
+        story.append(Paragraph(format_inline(compact), styles["Body"]))
 
     if in_code:
         flush_code()
