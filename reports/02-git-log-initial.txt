@@ -1,0 +1,2 @@
+﻿3800359 feat: Add web skeleton (HTML, CSS, JavaScript)
+bc7188c docs: Add README with project description and instructions
