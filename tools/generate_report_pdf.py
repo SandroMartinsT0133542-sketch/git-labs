@@ -20,11 +20,22 @@ from reportlab.platypus import (
     Table,
     TableStyle,
 )
+from svglib.svglib import svg2rlg
 
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORT_MD = ROOT / "reports" / "report.md"
 OUTPUT_PDF = ROOT / "reports" / "SandroMartins0133542.pdf"
+SCREENSHOTS_DIR = ROOT / "reports" / "screenshots"
+
+
+SCREENSHOT_ITEMS = [
+    ("git-status-initial.svg", "Figura 1. Estado inicial do repositório"),
+    ("git-status-conflict.svg", "Figura 2. Estado do repositório durante o conflito"),
+    ("git-diff-conflict.svg", "Figura 3. Diff do conflito com marcadores"),
+    ("git-log-graph.svg", "Figura 4. Histórico pós-merge em gráfico"),
+    ("git-tags-list.svg", "Figura 5. Lista de tags criadas"),
+]
 
 
 def build_styles():
@@ -146,12 +157,45 @@ def build_styles():
     return styles
 
 
+def sanitize_text(value: str) -> str:
+    return (
+        value.replace("Evidências", "Registos")
+        .replace("evidências", "registos")
+        .replace("Evidência", "Registo")
+        .replace("evidência", "registo")
+        .replace("evidencias", "registos")
+        .replace("evidencia", "registo")
+    )
+
+
+def svg_block(svg_name: str, caption: str, max_width: float = 16.0 * cm):
+    svg_path = SCREENSHOTS_DIR / svg_name
+    drawing = svg2rlg(str(svg_path))
+    if drawing is None:
+        return Paragraph(f"{caption} (ficheiro SVG indisponível)", getSampleStyleSheet()["BodyText"])
+
+    if drawing.width > max_width:
+        scale = max_width / drawing.width
+        drawing.scale(scale, scale)
+        drawing.width *= scale
+        drawing.height *= scale
+
+    return KeepTogether(
+        [
+            Paragraph(caption, getSampleStyleSheet()["Italic"]),
+            Spacer(1, 0.12 * cm),
+            drawing,
+            Spacer(1, 0.18 * cm),
+        ]
+    )
+
+
 def build_cover_table(styles):
     data = [
         ["Aluno", "Sandro Ferreira Martins"],
         ["Número", "0133542"],
         ["Email", "Sandro.Martins.T0133542@edu.atec.pt"],
-        ["Tema", "Git, GitHub, branches, merge, tags e evidências visuais"],
+        ["Tema", "Git, GitHub, branches, merge, tags e registos visuais"],
     ]
     table = Table(data, colWidths=[3.0 * cm, 12.8 * cm])
     table.setStyle(
@@ -191,9 +235,14 @@ def parse_markdown(text: str, styles):
             story.append(Preformatted("\n".join(code_buffer), styles["CodeCustom"]))
             code_buffer = []
 
+    def add_screenshot(svg_name: str, caption: str) -> None:
+        story.append(svg_block(svg_name, caption))
+
     for line in text.splitlines()[4:]:
         stripped = line.rstrip()
         compact = stripped.strip()
+
+        compact = sanitize_text(compact)
 
         if compact.startswith("```"):
             if in_code:
@@ -227,7 +276,20 @@ def parse_markdown(text: str, styles):
             story.append(Paragraph(compact.replace("**", "<b>", 1).replace("**", "</b>", 1), styles["Body"]))
             continue
 
-        if compact.startswith("**Evidência"):
+        if "reports/screenshots/" in compact and compact.endswith(")"):
+            if "git-status-initial.svg" in compact:
+                add_screenshot("git-status-initial.svg", "Figura 1. Estado inicial do repositório")
+            elif "git-status-conflict.svg" in compact:
+                add_screenshot("git-status-conflict.svg", "Figura 2. Estado do repositório durante o conflito")
+            elif "git-diff-conflict.svg" in compact:
+                add_screenshot("git-diff-conflict.svg", "Figura 3. Diff do conflito com marcadores")
+            elif "git-log-graph.svg" in compact:
+                add_screenshot("git-log-graph.svg", "Figura 4. Histórico pós-merge em gráfico")
+            elif "git-tags-list.svg" in compact:
+                add_screenshot("git-tags-list.svg", "Figura 5. Lista de tags criadas")
+            continue
+
+        if compact.startswith("**Registo"):
             story.append(Paragraph(compact.replace("**", "", 2), styles["Evidence"]))
             continue
 
@@ -242,6 +304,8 @@ def parse_markdown(text: str, styles):
             continue
 
         if compact.startswith("[") and "](" in compact:
+            if "screenshots" in compact:
+                continue
             story.append(Paragraph(compact, styles["Body"]))
             continue
 
@@ -261,7 +325,7 @@ def cover_page(story, styles):
             Paragraph("Relatório técnico-académico", styles["CoverSubtitle"]),
             Spacer(1, 0.28 * cm),
             Paragraph(
-                "Documento académico com evidências textuais e visuais de commits, branches, merge com conflito, tags e preparação de colaboração GitHub.",
+                sanitize_text("Documento académico com registos textuais e visuais de commits, branches, merge com conflito, tags e preparação de colaboração GitHub."),
                 styles["Body"],
             ),
             Spacer(1, 0.45 * cm),
@@ -269,14 +333,14 @@ def cover_page(story, styles):
             Spacer(1, 0.35 * cm),
             Paragraph("Resumo", styles["SubHeading"]),
             Paragraph(
-                "O trabalho demonstra a criação, evolução e análise de um repositório Git com foco em rigor operacional, documentação de evidências e preparação para colaboração no GitHub. A estrutura inclui comandos essenciais, análise do histórico, resolução de conflito de merge, tagging semântica e material visual de suporte.",
+                sanitize_text("O trabalho demonstra a criação, evolução e análise de um repositório Git com foco em rigor operacional, documentação de registos e preparação para colaboração no GitHub. A estrutura inclui comandos essenciais, análise do histórico, resolução de conflito de merge, tagging semântica e material visual de suporte."),
                 styles["Body"],
             ),
             Paragraph("Palavras-chave", styles["SubHeading"]),
-            Paragraph("Git, GitHub, branches, merge, conflito, tags, documentação, evidência visual", styles["Body"]),
+            Paragraph("Git, GitHub, branches, merge, conflito, tags, documentação, registo visual", styles["Body"]),
             Spacer(1, 0.15 * cm),
             Table(
-                [["Evidências principais", "Screenshots SVG, report.md e logs de Git"], ["Colaborador", "vicsolucoes"], ["Estado", "Relatório revisto e pronto para submissão"]],
+                [["Registos principais", "Screenshots SVG, report.md e logs de Git"], ["Colaborador", "vicsolucoes"], ["Estado", "Relatório revisto e pronto para submissão"]],
                 colWidths=[4.2 * cm, 11.6 * cm],
                 style=TableStyle(
                     [
@@ -300,6 +364,15 @@ def cover_page(story, styles):
     )
 
 
+def screenshots_page(story, styles):
+    story.append(Paragraph("Registos Visuais", styles["SectionHeading"]))
+    story.append(Paragraph("As figuras seguintes sintetizam os momentos-chave do trabalho e substituem os blocos textuais de registo." , styles["Body"]))
+    story.append(Spacer(1, 0.2 * cm))
+    for svg_name, caption in SCREENSHOT_ITEMS:
+        story.append(svg_block(svg_name, caption))
+
+
+
 def footer(canvas, doc):
     canvas.saveState()
     canvas.setStrokeColor(colors.HexColor("#c7d5e0"))
@@ -318,6 +391,7 @@ def build_pdf() -> None:
     story = []
 
     cover_page(story, styles)
+    screenshots_page(story, styles)
     story.extend(parse_markdown(markdown_text, styles))
 
     frame = Frame(
@@ -341,7 +415,7 @@ def build_pdf() -> None:
         bottomMargin=1.8 * cm,
         title="Relatório de Projeto Web - Git & GitHub",
         author="Sandro Ferreira Martins",
-        subject="Git, GitHub e evidências do projeto web",
+        subject="Git, GitHub e registos do projeto web",
         creator="GitHub Copilot",
     )
     doc.addPageTemplates([PageTemplate(id="main", frames=[frame], onPage=footer)])
