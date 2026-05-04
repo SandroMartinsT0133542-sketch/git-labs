@@ -1,0 +1,345 @@
+from __future__ import annotations
+
+from pathlib import Path
+import re
+
+from reportlab.lib import colors
+from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+from reportlab.lib.units import cm
+from reportlab.platypus import (
+    BaseDocTemplate,
+    Frame,
+    KeepTogether,
+    PageBreak,
+    PageTemplate,
+    Paragraph,
+    Preformatted,
+    Spacer,
+    Table,
+    TableStyle,
+)
+
+
+ROOT = Path(__file__).resolve().parents[1]
+REPORT_MD = ROOT / "reports" / "report.md"
+OUTPUT_PDF = ROOT / "reports" / "SandroMartins0133542.pdf"
+
+
+def build_styles():
+    styles = getSampleStyleSheet()
+    styles.add(
+        ParagraphStyle(
+            name="CoverTitle",
+            parent=styles["Title"],
+            fontName="Helvetica-Bold",
+            fontSize=22,
+            leading=26,
+            alignment=TA_CENTER,
+            textColor=colors.HexColor("#143d59"),
+            spaceAfter=8,
+        )
+    )
+    styles.add(
+        ParagraphStyle(
+            name="CoverSubtitle",
+            parent=styles["BodyText"],
+            fontName="Helvetica",
+            fontSize=10.5,
+            leading=14,
+            alignment=TA_CENTER,
+            textColor=colors.HexColor("#355c7d"),
+            spaceAfter=6,
+        )
+    )
+    styles.add(
+        ParagraphStyle(
+            name="SectionHeading",
+            parent=styles["Heading1"],
+            fontName="Helvetica-Bold",
+            fontSize=14,
+            leading=18,
+            textColor=colors.HexColor("#1f5f8b"),
+            spaceBefore=10,
+            spaceAfter=6,
+            keepWithNext=True,
+        )
+    )
+    styles.add(
+        ParagraphStyle(
+            name="SubHeading",
+            parent=styles["Heading2"],
+            fontName="Helvetica-Bold",
+            fontSize=11.5,
+            leading=14,
+            textColor=colors.HexColor("#2c3e50"),
+            spaceBefore=7,
+            spaceAfter=4,
+            keepWithNext=True,
+        )
+    )
+    styles.add(
+        ParagraphStyle(
+            name="Body",
+            parent=styles["BodyText"],
+            fontName="Helvetica",
+            fontSize=9.7,
+            leading=13,
+            alignment=TA_JUSTIFY,
+            textColor=colors.HexColor("#23313f"),
+            spaceAfter=5,
+        )
+    )
+    styles.add(
+        ParagraphStyle(
+            name="BulletCustom",
+            parent=styles["BodyText"],
+            fontName="Helvetica",
+            fontSize=9.5,
+            leading=12.7,
+            leftIndent=14,
+            firstLineIndent=-8,
+            textColor=colors.HexColor("#23313f"),
+            spaceAfter=2,
+        )
+    )
+    styles.add(
+        ParagraphStyle(
+            name="CodeCustom",
+            parent=styles["Code"],
+            fontName="Courier",
+            fontSize=8.15,
+            leading=10,
+            textColor=colors.HexColor("#17212b"),
+            backColor=colors.HexColor("#f3f6f8"),
+            borderPadding=7,
+            leftIndent=6,
+            rightIndent=6,
+            spaceBefore=2,
+            spaceAfter=6,
+        )
+    )
+    styles.add(
+        ParagraphStyle(
+            name="Meta",
+            parent=styles["BodyText"],
+            fontName="Helvetica",
+            fontSize=9.8,
+            leading=12.5,
+            alignment=TA_CENTER,
+            textColor=colors.HexColor("#49657a"),
+            spaceAfter=0,
+        )
+    )
+    styles.add(
+        ParagraphStyle(
+            name="Evidence",
+            parent=styles["BodyText"],
+            fontName="Helvetica-Bold",
+            fontSize=9.2,
+            leading=12,
+            textColor=colors.HexColor("#1a5276"),
+            spaceAfter=4,
+        )
+    )
+    return styles
+
+
+def build_cover_table(styles):
+    data = [
+        ["Aluno", "Sandro Ferreira Martins"],
+        ["Número", "0133542"],
+        ["Email", "Sandro.Martins.T0133542@edu.atec.pt"],
+        ["Tema", "Git, GitHub, branches, merge, tags e evidências visuais"],
+    ]
+    table = Table(data, colWidths=[3.0 * cm, 12.8 * cm])
+    table.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#d6eaf8")),
+                ("BACKGROUND", (0, 1), (-1, -1), colors.white),
+                ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#f8fbfd")]),
+                ("TEXTCOLOR", (0, 0), (-1, -1), colors.HexColor("#23313f")),
+                ("FONTNAME", (0, 0), (0, -1), "Helvetica-Bold"),
+                ("FONTNAME", (1, 0), (1, -1), "Helvetica"),
+                ("FONTSIZE", (0, 0), (-1, -1), 9.2),
+                ("LEADING", (0, 0), (-1, -1), 11),
+                ("GRID", (0, 0), (-1, -1), 0.4, colors.HexColor("#b3c6d6")),
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                ("LEFTPADDING", (0, 0), (-1, -1), 6),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+                ("TOPPADDING", (0, 0), (-1, -1), 5),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+            ]
+        )
+    )
+    return table
+
+
+def parse_markdown(text: str, styles):
+    story = []
+    in_code = False
+    code_buffer: list[str] = []
+
+    bullet_re = re.compile(r"^-\s+(.*)$")
+    ordered_re = re.compile(r"^\d+\.\s+(.*)$")
+
+    def flush_code() -> None:
+        nonlocal code_buffer
+        if code_buffer:
+            story.append(Preformatted("\n".join(code_buffer), styles["CodeCustom"]))
+            code_buffer = []
+
+    for line in text.splitlines()[4:]:
+        stripped = line.rstrip()
+        compact = stripped.strip()
+
+        if compact.startswith("```"):
+            if in_code:
+                flush_code()
+                in_code = False
+            else:
+                in_code = True
+            continue
+
+        if in_code:
+            code_buffer.append(stripped)
+            continue
+
+        if not compact:
+            story.append(Spacer(1, 0.12 * cm))
+            continue
+
+        if compact.startswith("## "):
+            story.append(Paragraph(compact[3:], styles["SectionHeading"]))
+            continue
+
+        if compact.startswith("### "):
+            story.append(Paragraph(compact[4:], styles["SubHeading"]))
+            continue
+
+        if compact.startswith("#### "):
+            story.append(Paragraph(compact[5:], styles["SubHeading"]))
+            continue
+
+        if compact.startswith("**") and compact.endswith("**"):
+            story.append(Paragraph(compact.replace("**", "<b>", 1).replace("**", "</b>", 1), styles["Body"]))
+            continue
+
+        if compact.startswith("**Evidência"):
+            story.append(Paragraph(compact.replace("**", "", 2), styles["Evidence"]))
+            continue
+
+        bullet_match = bullet_re.match(compact)
+        if bullet_match:
+            story.append(Paragraph(f"• {bullet_match.group(1)}", styles["BulletCustom"]))
+            continue
+
+        ordered_match = ordered_re.match(compact)
+        if ordered_match:
+            story.append(Paragraph(compact, styles["BulletCustom"]))
+            continue
+
+        if compact.startswith("[") and "](" in compact:
+            story.append(Paragraph(compact, styles["Body"]))
+            continue
+
+        story.append(Paragraph(compact, styles["Body"]))
+
+    if in_code:
+        flush_code()
+
+    return story
+
+
+def cover_page(story, styles):
+    story.extend(
+        [
+            Spacer(1, 0.7 * cm),
+            Paragraph("Relatório de Projeto Web", styles["CoverTitle"]),
+            Paragraph("Git & GitHub", styles["CoverSubtitle"]),
+            Spacer(1, 0.28 * cm),
+            Paragraph(
+                "Documento académico com evidências textuais e visuais de commits, branches, merge com conflito, tags e preparação de colaboração GitHub.",
+                styles["Body"],
+            ),
+            Spacer(1, 0.45 * cm),
+            build_cover_table(styles),
+            Spacer(1, 0.35 * cm),
+            Table(
+                [["Evidências principais", "Screenshots SVG, report.md e logs de Git"], ["Colaborador", "vicsolucoes"], ["Estado", "Relatório revisto e pronto para submissão"]],
+                colWidths=[4.2 * cm, 11.6 * cm],
+                style=TableStyle(
+                    [
+                        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#ebf5fb")),
+                        ("ROWBACKGROUNDS", (0, 0), (-1, -1), [colors.white, colors.HexColor("#f8fbfd")]),
+                        ("GRID", (0, 0), (-1, -1), 0.4, colors.HexColor("#b3c6d6")),
+                        ("FONTNAME", (0, 0), (0, -1), "Helvetica-Bold"),
+                        ("FONTNAME", (1, 0), (1, -1), "Helvetica"),
+                        ("TEXTCOLOR", (0, 0), (-1, -1), colors.HexColor("#23313f")),
+                        ("FONTSIZE", (0, 0), (-1, -1), 9.0),
+                        ("LEADING", (0, 0), (-1, -1), 11),
+                        ("LEFTPADDING", (0, 0), (-1, -1), 6),
+                        ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+                        ("TOPPADDING", (0, 0), (-1, -1), 5),
+                        ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+                    ]
+                ),
+            ),
+            PageBreak(),
+        ]
+    )
+
+
+def footer(canvas, doc):
+    canvas.saveState()
+    canvas.setStrokeColor(colors.HexColor("#c7d5e0"))
+    canvas.setLineWidth(0.35)
+    canvas.line(doc.leftMargin, 1.45 * cm, A4[0] - doc.rightMargin, 1.45 * cm)
+    canvas.setFont("Helvetica", 8)
+    canvas.setFillColor(colors.HexColor("#5d6d7e"))
+    canvas.drawString(doc.leftMargin, 1.0 * cm, "Projeto Git & GitHub")
+    canvas.drawRightString(A4[0] - doc.rightMargin, 1.0 * cm, f"Página {doc.page}")
+    canvas.restoreState()
+
+
+def build_pdf() -> None:
+    styles = build_styles()
+    markdown_text = REPORT_MD.read_text(encoding="utf-8")
+    story = []
+
+    cover_page(story, styles)
+    story.extend(parse_markdown(markdown_text, styles))
+
+    frame = Frame(
+        2.0 * cm,
+        1.9 * cm,
+        A4[0] - 4.0 * cm,
+        A4[1] - 3.7 * cm,
+        leftPadding=0,
+        rightPadding=0,
+        topPadding=0,
+        bottomPadding=0,
+        id="normal",
+    )
+
+    doc = BaseDocTemplate(
+        str(OUTPUT_PDF),
+        pagesize=A4,
+        leftMargin=2.0 * cm,
+        rightMargin=2.0 * cm,
+        topMargin=1.7 * cm,
+        bottomMargin=1.8 * cm,
+        title="Relatório de Projeto Web - Git & GitHub",
+        author="Sandro Ferreira Martins",
+        subject="Git, GitHub e evidências do projeto web",
+        creator="GitHub Copilot",
+    )
+    doc.addPageTemplates([PageTemplate(id="main", frames=[frame], onPage=footer)])
+    doc.build(story)
+    print(f"Wrote {OUTPUT_PDF} ({OUTPUT_PDF.stat().st_size} bytes)")
+
+
+if __name__ == "__main__":
+    build_pdf()
